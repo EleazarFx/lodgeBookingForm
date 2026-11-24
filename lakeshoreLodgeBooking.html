@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lakeshore Lodge Booking</title>
+    <style>
+        :root {
+            --ink: #19324d;
+            --muted: #66768a;
+            --blue: #1677a8;
+            --cream: #f6f7f4;
+            --line: #dce4e8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, .9), transparent 22rem),
+                linear-gradient(135deg, #eef5f3, #dcebf0);
+        }
+
+        .page {
+            width: min(1120px, calc(100% - 32px));
+            margin: 32px auto;
+        }
+
+        .welcome {
+            margin-bottom: 18px;
+            padding: 18px 22px;
+            border-left: 5px solid #eaad5a;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 8px 28px rgba(32, 72, 96, .08);
+        }
+
+        .welcome strong { color: var(--blue); }
+
+        h1 {
+            margin: 0 0 6px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(30px, 5vw, 48px);
+            letter-spacing: -.5px;
+        }
+
+        .subtitle { margin: 0; color: var(--muted); }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.65fr) minmax(260px, .75fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        form, .bookings {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 35px rgba(32, 72, 96, .1);
+        }
+
+        form { padding: 22px; }
+        .bookings { padding: 20px; align-self: start; }
+
+        fieldset {
+            margin: 0 0 16px;
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        legend { padding: 0 8px; font-weight: 700; color: var(--blue); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        input[type="password"] {
+            width: 100%;
+            height: 42px;
+            padding: 9px 11px;
+            border: 1px solid #cbd6dc;
+            border-radius: 6px;
+            color: var(--ink);
+            background: #fff;
+        }
+
+        input:focus {
+            border-color: var(--blue);
+            outline: 3px solid rgba(22, 119, 168, .12);
+        }
+
+        input.invalid { border-color: #c84e4e; }
+        .field-error { min-height: 18px; margin: 4px 0 0; color: #a83a3a; font-size: 12px; }
+
+        .choice {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 9px 0;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-weight: 400;
+        }
+
+        .choice input { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); }
+        .choice label { display: inline; margin: 0; }
+
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-radius: 8px;
+            background: #edf7f8;
+            font-weight: 700;
+        }
+
+        #total {
+            width: 190px;
+            border: 0;
+            background: transparent;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--blue);
+            text-align: right;
+        }
+
+        .submit-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .language {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        button {
+            min-height: 42px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #submitBtn {
+            padding: 10px 22px;
+            background: var(--blue);
+            color: #fff;
+            font-weight: 800;
+        }
+
+        #submitBtn:hover { background: #10618e; }
+
+        .bookings h2 {
+            margin: 0 0 12px;
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        #bookingList {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #bookingList li {
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-left: 4px solid #eaad5a;
+            border-radius: 6px;
+            background: var(--cream);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .remove-btn {
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: #f2dfdf;
+            color: #913232;
+            font-size: 12px;
+        }
+
+        .empty { color: var(--muted); font-size: 14px; }
+
+        @media (max-width: 780px) {
+            .layout { grid-template-columns: 1fr; }
+            .bookings { order: 2; }
+        }
+
+        @media (max-width: 520px) {
+            .page { width: min(100% - 20px, 1120px); margin: 16px auto; }
+            form { padding: 14px; }
+            .grid { grid-template-columns: 1fr; }
+            .submit-row { align-items: flex-end; }
+            #total { width: 155px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="welcome">
+            <h1>Lakeshore Lodge Booking</h1>
+            <p class="subtitle" id="greeting">Welcome to Lakeshore Lodge.</p>
+        </header>
+
+        <div class="layout">
+            <form id="bookingForm" action="" method="post" novalidate>
+                <fieldset>
+                    <legend>Personal Details</legend>
+                    <div class="grid">
+                        <div>
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" minlength="2" autocomplete="name" required>
+                            <p class="field-error" id="nameError"></p>
+                        </div>
+                        <div>
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" autocomplete="email" required>
+                            <p class="field-error" id="emailError"></p>
+                        </div>
+                        <div>
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="e.g. +265 123 456 789" required>
+                            <p class="field-error" id="phoneError"></p>
+                        </div>
+                        <div>
+                            <label for="guests">Number of Guests *</label>
+                            <input type="number" id="guests" name="guests" min="1" max="20" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Room &amp; Extras</legend>
+                    <label>Room Type *</label>
+                    <div class="choice">
+                        <input type="radio" id="standard" name="room" value="Standard Room" data-rate="50000" required>
+                        <label for="standard">Standard Room - MWK 50,000/night</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="deluxe" name="room" value="Deluxe Room" data-rate="100000">
+                        <label for="deluxe">Deluxe Room - MWK 100,000/night</label>
+                    </div>
+                    <div class="choice">
+                        <input type="checkbox" id="breakfast" name="extras" value="Breakfast" data-price="15000">
+                        <label for="breakfast">Breakfast - MWK 15,000</label>
+                    </div>
+                    <div class="choice">
+                        <input type="checkbox" id="boatTrip" name="extras" value="Boat trip" data-price="25000">
+                        <label for="boatTrip">Boat trip - MWK 25,000</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Stay Dates</legend>
+                    <div class="grid">
+                        <div>
+                            <label for="checkin">Check-in Date *</label>
+                            <input type="date" id="checkin" name="checkin" required>
+                        </div>
+                        <div>
+                            <label for="checkout">Check-out Date *</label>
+                            <input type="date" id="checkout" name="checkout" required>
+                            <p class="field-error" id="dateError"></p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Account Security</legend>
+                    <div class="grid">
+                        <div>
+                            <label for="password">Password *</label>
+                            <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
+                            <p class="field-error" id="passwordError"></p>
+                        </div>
+                        <div>
+                            <label for="confirmPassword">Confirm Password *</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" autocomplete="new-password" required>
+                            <p class="field-error" id="confirmPasswordError"></p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="total-row">
+                    <span>Estimated Total</span>
+                    <input type="text" id="total" name="total" value="MWK 0" readonly>
+                </div>
+
+                <br>
+                <div class="submit-row">
+                    <span class="language" id="browserLanguage"></span>
+                    <button type="submit" id="submitBtn">Confirm Booking</button>
+                </div>
+            </form>
+
+            <aside class="bookings" aria-live="polite">
+                <h2>My bookings</h2>
+                <ul id="bookingList"></ul>
+                <p class="empty" id="emptyMessage">No confirmed bookings yet.</p>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        const bookingForm = document.getElementById('bookingForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+
+        function formatMoney(amount) {
+            return 'MWK ' + amount.toLocaleString();
+        }
+
+        function greetVisitor() {
+            const hour = new Date().getHours();
+            let greeting = 'Welcome';
+            if (hour < 12) greeting = 'Good morning';
+            else if (hour < 18) greeting = 'Good afternoon';
+            else greeting = 'Good evening';
+
+            document.getElementById('greeting').textContent =
+                greeting + '! Welcome to Lakeshore Lodge. Please complete your booking below.';
+            document.getElementById('browserLanguage').textContent =
+                'Browser language: ' + navigator.language;
+        }
+
+        function setDateLimits() {
+            const today = new Date();
+            const todayValue = [
+                today.getFullYear(),
+                String(today.getMonth() + 1).padStart(2, '0'),
+                String(today.getDate()).padStart(2, '0')
+            ].join('-');
+
+            document.getElementById('checkin').min = todayValue;
+            document.getElementById('checkout').min = todayValue;
+        }
+
+        function calculateNights() {
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            if (!checkin || !checkout) return 0;
+
+            const start = new Date(checkin + 'T00:00:00');
+            const end = new Date(checkout + 'T00:00:00');
+            const nights = Math.round((end - start) / 86400000);
+            return nights > 0 ? nights : 0;
+        }
+
+        function updateTotal() {
+            const selectedRoom = document.querySelector('input[name="room"]:checked');
+            const roomRate = selectedRoom ? Number(selectedRoom.dataset.rate) : 0;
+            const nights = calculateNights();
+
+            let extrasCount = 0;
+            let extrasTotal = 0;
+            document.querySelectorAll('input[name="extras"]:checked').forEach(extra => {
+                extrasCount++;
+                extrasTotal += Number(extra.dataset.price);
+            });
+
+            const roomTotal = roomRate * nights;
+            document.getElementById('total').value =
+                formatMoney(roomTotal + extrasTotal);
+
+            return { nights, extrasCount, roomTotal, extrasTotal };
+        }
+
+        function validateName() {
+            const value = nameInput.value.trim();
+            const error = document.getElementById('nameError');
+            if (value.length < 2) {
+                nameInput.classList.add('invalid');
+                error.textContent = 'Please enter your full name.';
+                return false;
+            }
+            nameInput.classList.remove('invalid');
+            error.textContent = '';
+            return true;
+        }
+
+        function validatePhone() {
+            const value = phoneInput.value.trim();
+            const digits = value.replace(/\D/g, '');
+            const error = document.getElementById('phoneError');
+            if (digits.length < 7) {
+                phoneInput.classList.add('invalid');
+                error.textContent = 'Please enter a valid phone number.';
+                return false;
+            }
+            phoneInput.classList.remove('invalid');
+            error.textContent = '';
+            return true;
+        }
+
+        function validatePassword() {
+            const password = document.getElementById('password');
+            const confirm = document.getElementById('confirmPassword');
+            const passwordError = document.getElementById('passwordError');
+            const confirmError = document.getElementById('confirmPasswordError');
+            let valid = true;
+
+            if (password.value.length < 8) {
+                password.classList.add('invalid');
+                passwordError.textContent = 'Use at least 8 characters.';
+                valid = false;
+            } else {
+                password.classList.remove('invalid');
+                passwordError.textContent = '';
+            }
+
+            if (confirm.value !== password.value || confirm.value.length === 0) {
+                confirm.classList.add('invalid');
+                confirmError.textContent = 'Passwords do not match.';
+                valid = false;
+            } else {
+                confirm.classList.remove('invalid');
+                confirmError.textContent = '';
+            }
+            return valid;
+        }
+
+        function validateDates() {
+            const checkin = document.getElementById('checkin');
+            const checkout = document.getElementById('checkout');
+            const error = document.getElementById('dateError');
+
+            if (!checkin.value || !checkout.value || calculateNights() <= 0) {
+                checkout.classList.add('invalid');
+                error.textContent = 'Check-out must be after check-in.';
+                return false;
+            }
+
+            checkout.classList.remove('invalid');
+            error.textContent = '';
+            return true;
+        }
+
+        function addBooking() {
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+            const guests = document.getElementById('guests').value;
+            const selectedRoom = document.querySelector('input[name="room"]:checked');
+            const selectedExtras = Array.from(document.querySelectorAll('input[name="extras"]:checked'))
+                .map(extra => extra.value);
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            const totals = updateTotal();
+
+            const item = document.createElement('li');
+            const details = document.createElement('div');
+            details.innerHTML =
+                '<strong>' + escapeHtml(name) + '</strong><br>' +
+                escapeHtml(selectedRoom.value) + '<br>' +
+                guests + ' guest(s) | ' + totals.nights + ' night(s)<br>' +
+                checkin + ' to ' + checkout + '<br>' +
+                (selectedExtras.length ? escapeHtml(selectedExtras.join(', ')) : 'No extras') + '<br>' +
+                '<strong>' + document.getElementById('total').value + '</strong><br>' +
+                '<small>' + escapeHtml(email) + ' | ' + escapeHtml(phone) + '</small>';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-btn';
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', function() {
+                item.remove();
+                updateEmptyMessage();
+            });
+
+            item.appendChild(details);
+            item.appendChild(removeButton);
+            document.getElementById('bookingList').appendChild(item);
+            updateEmptyMessage();
+        }
+
+        function escapeHtml(value) {
+            const node = document.createElement('span');
+            node.textContent = value;
+            return node.innerHTML;
+        }
+
+        function updateEmptyMessage() {
+            document.getElementById('emptyMessage').style.display =
+                document.getElementById('bookingList').children.length ? 'none' : 'block';
+        }
+
+        window.addEventListener('load', function() {
+            greetVisitor();
+            setDateLimits();
+            updateTotal();
+        });
+
+        nameInput.addEventListener('input', validateName);
+        phoneInput.addEventListener('input', validatePhone);
+
+        ['guests', 'checkin', 'checkout', 'standard', 'deluxe', 'breakfast', 'boatTrip']
+            .forEach(id => document.getElementById(id).addEventListener('change', updateTotal));
+
+        document.getElementById('password').addEventListener('input', validatePassword);
+        document.getElementById('confirmPassword').addEventListener('input', validatePassword);
+        document.getElementById('checkin').addEventListener('change', validateDates);
+        document.getElementById('checkout').addEventListener('change', validateDates);
+
+        bookingForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const validName = validateName();
+            const validPhone = validatePhone();
+            const validPassword = validatePassword();
+            const validDates = validateDates();
+            const selectedRoom = document.querySelector('input[name="room"]:checked');
+
+            if (!bookingForm.checkValidity() || !validName || !validPhone || !validPassword ||
+                !validDates || !selectedRoom) {
+                if (!selectedRoom) {
+                    alert('Please select a room type.');
+                }
+                bookingForm.reportValidity();
+                return;
+            }
+
+            addBooking();
+            bookingForm.reset();
+            updateTotal();
+            document.querySelectorAll('.invalid').forEach(field => field.classList.remove('invalid'));
+            document.querySelectorAll('.field-error').forEach(error => error.textContent = '');
+        });
+    </script>
+</body>
+</html>
